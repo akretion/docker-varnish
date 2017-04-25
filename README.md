@@ -1,0 +1,1 @@
+# Varnish image for voodoo
