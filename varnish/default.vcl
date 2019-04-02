@@ -72,6 +72,20 @@ sub vcl_backend_response {
             header.remove(beresp.http.Set-Cookie, "_role=");
         }
     }
+    # When using ESI the Etag and Last-Modified do not depend on the assembled element
+    # This mean that the page in browser cache will be considered as valid
+    # even if the containt have change in the ESI block.
+    # Many community are impacted
+    # Drupal
+    # https://www.drupal.org/project/authcache/issues/2358225
+    # Fastly (based on varnish) recommand to drop etag and last-modified
+    # https://support.fastly.com/hc/en-us/community/posts/360040447152-How-do-I-enable-basic-ESI-in-my-VCL-
+    # To solve the issue maybe it possible to set by our self the correct last modified
+    # some interesting varnish PR
+    # https://github.com/varnishcache/varnish-cache/pull/2234
+    # https://github.com/varnishcache/varnish-cache/pull/1931
+    unset beresp.http.Etag;
+    unset beresp.http.Last-Modified;
     return (deliver);
 }
 
