@@ -17,8 +17,8 @@ import cookie;
 
 # Default backend definition. Set this to point to your content server.
 backend default {
-    .host = "172.30.0.252";
-    .port = "3000";
+    .host = "{{ .Env.BACKEND_IP }}";
+    .port = "{{ .Env.BACKEND_PORT }}";
 }
 
 sub vcl_recv {
@@ -69,6 +69,7 @@ sub vcl_backend_response {
             # never cache cookie that depend of the customer
             header.remove(beresp.http.Set-Cookie, "rack.session=");
             header.remove(beresp.http.Set-Cookie, "_session_id=");
+            header.remove(beresp.http.Set-Cookie, "_station_session=");
             header.remove(beresp.http.Set-Cookie, "_role=");
         }
     }
